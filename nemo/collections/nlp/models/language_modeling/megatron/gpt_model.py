@@ -190,6 +190,10 @@ class GPTModel(MegatronModule):
             if use_scaled_init_method
             else init_method_normal(init_method_std)
         )
+        self.multi_query_attention = None
+        att_type_l = attention_type.lower()
+        if 'multiquery' in att_type_l:
+            self.multi_query_attention = int(att_type_l.split('_')[-1])
         self.language_model, self._language_model_key = get_language_model(
             vocab_size=vocab_size,
             hidden_size=hidden_size,
@@ -221,6 +225,7 @@ class GPTModel(MegatronModule):
             normalization=normalization,
             layernorm_epsilon=layernorm_epsilon,
             rotary_percentage=rotary_percentage,
+            multi_query_attention=self.multi_query_attention,
             share_embeddings_and_output_weights=share_embeddings_and_output_weights,
             bias=bias,
             bias_activation_fusion=bias_activation_fusion,
